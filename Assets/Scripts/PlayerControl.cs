@@ -17,6 +17,8 @@ public class PlayerControl : MonoBehaviour
     public float jumpForce;
     public float jumpTime;
     private float jumpTimeCounter;
+    private bool stoppedJumping;
+    private bool canDoubleJump;
 
     private Rigidbody2D myRigidbody;
 
@@ -31,6 +33,9 @@ public class PlayerControl : MonoBehaviour
 
     public GameManager theGameManager;
 
+    public AudioSource jumpSound;
+    public AudioSource deathSound;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,6 +47,7 @@ public class PlayerControl : MonoBehaviour
         moveSpeedStore = moveSpeed;
         speedMilestoneCountStore = speedMilestoneCount;
         speedIncreaseMilestoneStore = speedIncreaseMilestone;
+        stoppedJumping = true;
     }
 
     // Update is called once per frame
@@ -67,10 +73,21 @@ public class PlayerControl : MonoBehaviour
             if (grounded)
             {
                 myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
+                stoppedJumping = false;
+                jumpSound.Play();
+            }
+
+            if(!grounded && canDoubleJump)
+            {
+                myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
+                jumpTimeCounter = jumpTime;
+                stoppedJumping = false;
+                canDoubleJump = false;
+                jumpSound.Play();
             }
         }
 
-        if(Input.GetKey (KeyCode.Space) || Input.GetMouseButton(0))
+        if((Input.GetKey (KeyCode.Space) || Input.GetMouseButton(0)) && !stoppedJumping)
         {
 
             if (jumpTimeCounter > 0)
@@ -84,11 +101,13 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space) || Input.GetMouseButtonUp(0))
         {
             jumpTimeCounter = 0;
+            stoppedJumping = true;
         }
 
         if (grounded)
         {
             jumpTimeCounter = jumpTime;
+            canDoubleJump = true;
         }
 
         myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
@@ -99,10 +118,12 @@ public class PlayerControl : MonoBehaviour
     {
         if (other.gameObject.tag == "killbox")
         {
+
             theGameManager.RestartGame();
             moveSpeed = moveSpeedStore;
             speedMilestoneCount = speedMilestoneCountStore;
             speedIncreaseMilestone = speedIncreaseMilestoneStore;
+            deathSound.Play();
         }
     }
 }
