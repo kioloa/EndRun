@@ -13,7 +13,6 @@ public class PlatformGenerator : MonoBehaviour
     public float distanceBetweenMin;
     public float distanceBetweenMax;
 
-    //public GameObject[] thePlatforms;
     private int platformSelector;
     private float[] platformWidths;
 
@@ -25,13 +24,28 @@ public class PlatformGenerator : MonoBehaviour
     public float maxHeightChange;
     private float heightChange;
 
+    //Монетки
     private CoinGenerator theCoinGenerator;
     public float randomCoinThreshold;
 
-    // Start is called before the first frame update
+    //Спайки
+    public float randomSpikeThreshold;
+    public ObjectPooler theSpikePool;
+
+    //Призрак
+    private GhostGenerator theGhostGenerator;
+    public float randomGhostThreshold;
+
+    //private Rigidbody2D ghostRigidbody;
+
+    //Бонусы
+    public float powerupHeight;
+    public ObjectPooler powerupPool;
+    public float powerupThreshold;
+
     void Start()
     {
-        //platformWidth = thePlatform.GetComponent<BoxCollider2D>().size.x;
+        //ghostRigidbody = FindObjectOfType<GhostGenerator>().GetComponent<Rigidbody2D>();
 
         platformWidths = new float[theObjectPools.Length];
 
@@ -44,11 +58,12 @@ public class PlatformGenerator : MonoBehaviour
         maxHeight = maxHeightPoint.position.y;
 
         theCoinGenerator = FindObjectOfType<CoinGenerator>();
+        theGhostGenerator = FindObjectOfType<GhostGenerator>();
     }
 
-    // Update is called once per frame
     void Update()
     {
+
         if (transform.position.x < generationPoint.position.x)
         {
             distanceBetween = Random.Range(distanceBetweenMin, distanceBetweenMax);
@@ -66,11 +81,17 @@ public class PlatformGenerator : MonoBehaviour
                 heightChange = minHeight;
             }
 
+            if(Random.Range(0f, 100f) < powerupThreshold)
+            {
+                GameObject newPowerup = powerupPool.GetPooledObject();
+
+                newPowerup.transform.position = transform.position + new Vector3(distanceBetween / 2, Random.Range(1f, powerupHeight), 0f);
+
+                newPowerup.SetActive(true);
+            }
+
+
             transform.position = new Vector3(transform.position.x + (platformWidths[platformSelector] / 2)  + distanceBetween, heightChange, transform.position.z);
-
-
-  
-            //Instantiate(/*thePlatform,*/ thePlatforms[platformSelector], transform.position, transform.rotation);
             
             GameObject newPlatform = theObjectPools[platformSelector].GetPooledObject();
 
@@ -80,7 +101,32 @@ public class PlatformGenerator : MonoBehaviour
 
             if (Random.Range(0f, 100f) < randomCoinThreshold)
             {
-                theCoinGenerator.SpawnCoins(new Vector3(transform.position.x, transform.position.y + 1f, transform.position.z));
+                theCoinGenerator.SpawnCoins(new Vector3(transform.position.x + 1f, transform.position.y + 1f, transform.position.z));
+            }
+
+            if (Random.Range(0f, 100f) < randomGhostThreshold)
+            {
+                if (platformWidths[platformSelector] > 4f)
+                {
+                    Vector3 startPosition = new Vector3(transform.position.x, transform.position.y + Random.Range(1f, 3f), transform.position.z);
+                    theGhostGenerator.SpawnGhosts(startPosition);
+                }
+            }
+
+            if (Random.Range(0f, 100f) < randomSpikeThreshold)
+            {
+                if (platformWidths[platformSelector] > 3f)
+                {
+                    GameObject newSpike = theSpikePool.GetPooledObject();
+
+                    float spikeXPosition = Random.Range(-platformWidths[platformSelector] / 2f + 2f, platformWidths[platformSelector] / 2f - 1f);
+
+                    Vector3 spikePosition = new Vector3(spikeXPosition, 0.5f, 0f);
+
+                    newSpike.transform.position = transform.position + spikePosition;
+                    newSpike.transform.rotation = transform.rotation;
+                    newSpike.SetActive(true);
+                }
             }
 
             transform.position = new Vector3(transform.position.x + (platformWidths[platformSelector] / 2), transform.position.y, transform.position.z);

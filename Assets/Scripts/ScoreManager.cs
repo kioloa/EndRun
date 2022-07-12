@@ -8,15 +8,18 @@ public class ScoreManager : MonoBehaviour
 
     public Text scoreText;
     public Text highScoreText;
+    public Text moneyText;
 
-    public float scoreCount;
-    public float highScoreCount;
+    public float scoreCount; //Очки
+    public float highScoreCount; //Рекорд
+    public float moneyCount; //Монеты
 
     public float pointsPerSecond;
 
     public bool scoreIncreasing;
 
-    // Start is called before the first frame update
+    public bool shouldDouble;
+
     void Start()
     {
         if(PlayerPrefs.HasKey("HighScore"))
@@ -24,10 +27,6 @@ public class ScoreManager : MonoBehaviour
             highScoreCount = PlayerPrefs.GetFloat("HighScore");
         }
     }
-
-    // Update is called once per frame
-
-
 
     void Update()
     {
@@ -43,10 +42,20 @@ public class ScoreManager : MonoBehaviour
 
         scoreText.text = "Score: " + Mathf.Round(scoreCount);
         highScoreText.text = "High Score: " + Mathf.Round(highScoreCount);
+        moneyText.text = "Money: " + Mathf.Round(moneyCount);
     }
 
     public void AddScore(int pointsToAdd)
     {
+        if (shouldDouble)
+        {
+            pointsToAdd = pointsToAdd * 2;
+        }
         scoreCount += pointsToAdd;
+    }
+
+    public void AddMoney(int moneyToAdd)
+    {
+        moneyCount += moneyToAdd;
     }
 }

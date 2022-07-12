@@ -7,14 +7,15 @@ public class MainMenu : MonoBehaviour
 {
 
     public string playGameLevel;
+    public string questionLevel;
 
     public void PlayGame()
     {
         SceneManager.LoadScene(playGameLevel);
     }
 
-    public void QuitGame()
+    public void ExitGame()
     {
-        Application.Quit();
+        SceneManager.LoadScene(questionLevel);
     }
 }

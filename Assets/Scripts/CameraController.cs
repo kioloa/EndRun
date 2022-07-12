@@ -9,14 +9,12 @@ public class CameraController : MonoBehaviour
     private Vector3 lastPlayerPosition;
     private float distanceToMove;
 
-    // Start is called before the first frame update
     void Start()
     {
         thePlayer = FindObjectOfType<PlayerControl>();
         lastPlayerPosition = thePlayer.transform.position;
     }
 
-    // Update is called once per frame
     void Update()
     {
         distanceToMove = thePlayer.transform.position.x - lastPlayerPosition.x;
