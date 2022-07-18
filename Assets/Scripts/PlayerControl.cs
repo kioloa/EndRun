@@ -19,6 +19,9 @@ public class PlayerControl : MonoBehaviour
     private float jumpTimeCounter;
     private bool stoppedJumping;
     private bool canDoubleJump;
+    private float jumpForceStore;
+
+    private Vector3 lastPlayerPositions;
 
     public float slidingForce;
     public float slidingTime;
@@ -42,10 +45,13 @@ public class PlayerControl : MonoBehaviour
 
     public GameObject thePlayer;
 
+    public PowerupManager thePowerupManager;
+
     void Start()
     {
         myRigidbody = GetComponent<Rigidbody2D>();
 
+        jumpForceStore = jumpForce;
         myAnimator = GetComponent<Animator>();
         jumpTimeCounter = jumpTime;
         slidingTimeCounter = slidingTime;
@@ -143,6 +149,12 @@ public class PlayerControl : MonoBehaviour
             canDoubleJump = true;
         }
 
+        if (Input.GetKeyUp(KeyCode.Q))
+        {
+            if (FindObjectOfType<ScoreManager>().PowerUp1()) { jumpForce += 1; }
+        }
+
+
         myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
         myAnimator.SetBool("Grounded", grounded);
         myAnimator.SetBool("Sliding", Sliding);
@@ -154,9 +166,9 @@ public class PlayerControl : MonoBehaviour
         {
             theGameManager.RestartGame();
             moveSpeed = moveSpeedStore;
+            jumpForce = jumpForceStore;
             speedMilestoneCount = speedMilestoneCountStore;
             speedIncreaseMilestone = speedIncreaseMilestoneStore;
-            deathSound.Play();
         }
     }
 }

@@ -22,10 +22,10 @@ public class ScoreManager : MonoBehaviour
 
     void Start()
     {
-        if(PlayerPrefs.HasKey("HighScore"))
+        if (PlayerPrefs.HasKey("HighScore"))
         {
             highScoreCount = PlayerPrefs.GetFloat("HighScore");
-        }
+        }     
     }
 
     void Update()
@@ -58,4 +58,16 @@ public class ScoreManager : MonoBehaviour
     {
         moneyCount += moneyToAdd;
     }
+
+    public bool PowerUp1() //Ïğûæîê
+    {
+        if (moneyCount - 20 >= 0)
+        {
+            moneyCount -= 20;
+            return true;
+        }
+        else
+            return false;
+    }
+
 }

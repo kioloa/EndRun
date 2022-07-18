@@ -13,7 +13,6 @@ public class GhostGenerator : MonoBehaviour
         ghost = ghostPool.GetPooledObject();
         ghost.transform.position = startPosition;
         ghost.SetActive(true);
-        //startPosition.x += 3f;
     }
 
 }
